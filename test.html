@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projeto de Extensão: UX, Algoritmos e Impacto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .slide {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.6s ease-in-out;
+        position: absolute;
+        inset: 0;
+        overflow: hidden; /* Impede a barra de rolagem */
+      }
+      .slide.active {
+        display: flex;
+        opacity: 1;
+      }
+      .progress-bar-fill {
+        transition: width 0.3s ease-in-out;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-800 flex items-center justify-center min-h-screen p-4 md:p-8"
+  >
+    <!-- Frame da Apresentação em Tela Cheia -->
+    <div
+      class="w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden relative"
+    >
+      <!-- Container da Apresentação -->
+      <div id="presentation-container" class="flex-grow relative">
+        <!-- Os slides serão injetados aqui -->
+      </div>
+
+      <!-- Rodapé de Navegação com Ícones -->
+      <div class="bg-gray-50 border-t border-gray-200 p-4 z-10">
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+          <div
+            id="progress-bar"
+            class="bg-blue-600 h-2.5 rounded-full progress-bar-fill"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            id="prev-btn"
+            class="w-12 h-12 flex items-center justify-center text-gray-500 rounded-full hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span class="sr-only">Anterior</span>
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="slide-counter"
+            class="text-sm font-semibold text-gray-600"
+          ></div>
+          <button
+            id="next-btn"
+            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span class="sr-only">Próximo</span>
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const slidesData = [
+        // Slide 1: Tela Inicial
+        {
+          content: `
+                    <div class="w-full h-full bg-gray-800 text-white flex flex-col items-center justify-center text-center p-8">
+                        <h1 class="text-5xl font-bold">UX/UI e Algoritmos</h1>
+                        <p class="text-3xl mt-2 text-blue-300">na Transformação Social e Ambiental</p>
+                        <div class="my-10 w-24 h-1.5 bg-blue-400 rounded-full"></div>
+                        <p class="text-lg text-gray-400 mb-6">Um projeto de extensão por:</p>
+                        <div class="text-base text-gray-300 grid grid-cols-3 gap-x-8 gap-y-3">
+                           <p>Kauã Victor</p> <p>Samara Barcelos</p> <p>Jeffson Luiz</p> <p>Kauã Oliveira</p> <p>Kevin Maravilha</p> <p>Gabriel de Sousa</p> <p>Tiago Marcos</p> <p>Kauã Sousa</p> <p>Victor Emanuel</p> <p>Anna Karenina</p> <p>Abilio Batista</p>
+                        </div>
+                    </div>`,
+        },
+        // Slide 2: Boas-vindas
+        {
+          title: "Bem-Vindo!",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed max-w-2xl">Este projeto explora como o design e a tecnologia podem criar um futuro mais consciente e sustentável. Toque na seta para começar a jornada.</p><img src="./assets/leaves.jpg" alt="Ilustração de tecnologia e natureza" style="width: 600px; height: 300px; object-fit: cover; border-radius: 0.5rem; margin-top: 1.5rem;" class="mt-6 rounded-lg">',
+        },
+        // Slide 3: Pergunta de Engajamento
+        {
+          title: "Para Refletir...",
+          content:
+            '<p class="text-4xl lg:text-5xl font-bold text-gray-800 text-center leading-tight max-w-3xl">Quantas vezes, só hoje, um app influenciou uma decisão sua sem que você percebesse?</p>',
+        },
+        // Slide 4: Contexto
+        {
+          title: "As Forças Invisíveis",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed max-w-2xl">O <strong>Design de Experiência (UX/UI)</strong> e os <strong>Algoritmos</strong> são as forças que moldam nosso mundo digital. Eles definem o que vemos, o que sentimos e, muitas vezes, o que fazemos online.</p><img src="./assets/illustration.png" alt="Ilustração de interface digital" class="mt-6 rounded-lg">',
+        },
+        // Slide 5: O Problema
+        {
+          title: "O Problema Central",
+          customLayout: true,
+          content: `
+                    <div class="p-8 flex flex-col justify-center items-center w-full">
+                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-4">O Problema Central</h2>
+                        <p class="text-base text-center text-gray-500 mb-8 max-w-2xl">Identificamos um atrito fundamental: o acesso à tecnologia não garante o engajamento em práticas positivas.</p>
+                        <div class="space-y-8 w-full max-w-2xl">
+                            <div class="flex items-center space-x-6">
+                                <div class="flex-shrink-0 bg-blue-100 rounded-full p-4"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">Paradoxo da Escolha e Desmotivação</h3>
+                                    <p class="text-base text-gray-600 mt-1">A avalanche de apps com interfaces confusas deixa usuários perdidos e leva à desistência.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-6">
+                                <div class="flex-shrink-0 bg-red-100 rounded-full p-4"><svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">A Falha da Experiência do Usuário (UX)</h3>
+                                    <p class="text-base text-gray-600 mt-1">Apps pouco atraentes e difíceis de usar frustram o usuário, desperdiçando o potencial da tecnologia.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`,
+        },
+        // Slide 6: Impacto Real
+        {
+          title: "O Impacto no Mundo Real",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed max-w-2xl">A falta de engajamento afeta o equilíbrio entre <strong>saúde, sociedade e meio ambiente</strong>, como defendido pela ONU. O bom design pode ajudar a reverter esse quadro, gerando bem-estar e reduzindo a degradação ambiental.</p>',
+        },
+        // Slide 7: Missão do Projeto
+        {
+          title: "Nossa Missão",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed max-w-2xl">Nosso projeto de extensão atua como uma <strong>ponte</strong> entre o conhecimento acadêmico da UNIPÊ e as necessidades da comunidade, transformando teoria em soluções práticas e de impacto real.</p>',
+        },
+        // Slide 8: Boas Práticas
+        {
+          title: "Aprendendo com os Melhores",
+          content: `
+                    <p class="text-lg text-gray-600 leading-relaxed mb-6 max-w-2xl">Analisamos apps que acertam em cheio no engajamento:</p>
+                    <div class="space-y-3 w-full max-w-md">
+                        <div class="flex items-center bg-gray-100 p-3 rounded-lg transition transform hover:scale-105 shadow-sm">
+                            <img src="./assets/unnamed.webp" alt="Ícone do App" class="w-14 h-14 rounded-xl mr-4">
+                            <div>
+                                <p class="font-bold text-gray-800 text-left text-md">Nike Run Club</p>
+                                <p class="text-sm text-gray-600 text-left">Gamificação e Recompensas</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-gray-100 p-3 rounded-lg transition transform hover:scale-105 shadow-sm">
+                            <img src="./assets/GoogleMaps.svg" alt="Ícone do App" class="w-14 h-14 rounded-xl mr-4">
+                            <div>
+                                <p class="font-bold text-gray-800 text-left text-md">Google Maps</p>
+                                <p class="text-sm text-gray-600 text-left">Rotas Sustentáveis</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-gray-100 p-3 rounded-lg transition transform hover:scale-105 shadow-sm">
+                            <img src="./assets/headspace.jpg" alt="Ícone do App" class="w-14 h-14 rounded-xl mr-4">
+                            <div>
+                                <p class="font-bold text-gray-800 text-left text-md">Headspace</p>
+                                <p class="text-sm text-gray-600 text-left">UX para Saúde Mental</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-gray-100 p-3 rounded-lg transition transform hover:scale-105 shadow-sm">
+                            <img src="./assets/GreenApp.webp" alt="Ícone do App" class="w-14 h-14 rounded-xl mr-4">
+                            <div>
+                                <p class="font-bold text-gray-800 text-left text-md">GreenApp</p>
+                                <p class="text-sm text-gray-600 text-left">Incentivo ao Consumo Consciente</p>
+                            </div>
+                        </div>
+                    </div>`,
+        },
+        // Slide 9: Más Práticas
+        {
+          title: "O Que Vamos Evitar",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-6 max-w-2xl">Para criar uma experiência positiva, fugiremos de armadilhas comuns:</p><ul class="space-y-3 list-disc list-inside text-left text-gray-700 text-lg"><li>Interfaces complicadas e confusas</li><li>Excesso de notificações irrelevantes</li><li>Recomendações genéricas e impessoais</li><li>Falta de acompanhamento e progresso claro</li></ul>',
+        },
+        // Slide 10: Nossa Pesquisa
+        {
+          title: "Nossa Investigação",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-4 max-w-2xl">Guiamos nossa pesquisa por questões profundas sobre ética e consumo.</p><img src="./assets/Algoritmo_Consumo.png" alt="Diagrama sobre a influência da IA nas decisões do consumidor" style="width: 750px; height: 360px;" class="rounded-lg shadow-sm"><p class="text-sm text-gray-400 mt-4">Fonte: Adaptado de "The algorithmic consumer: A conceptual investigation of AI’s influence on consumer preferences and decisions Annur Islam Sifat Raj Soin College of Business".</p>',
+        },
+        // Slide 11: Diagnóstico Local
+        {
+          title: "Diagnóstico na UNIPÊ",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-6 max-w-2xl">Olhamos para dentro e mapeamos nossas forças e fraquezas:</p><div class="space-y-4 w-full max-w-xl"><div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg text-left"><h4 class="font-bold text-lg">Barreiras ❌</h4><p class="text-base">Falta de compreensão sobre "impacto algorítmico" e baixa integração entre cursos.</p></div><div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r-lg text-left"><h4 class="font-bold text-lg">Recursos ✅</h4><p class="text-base">Infraestrutura para eventos e potencial de conscientização da gestão.</p></div></div>',
+        },
+        // Slide 12: Descoberta 1: O Impacto do Design
+        {
+          title: "Descoberta 1: O Impacto do Design",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-4 max-w-2xl">A pesquisa comprova: um bom design gera resultados mensuráveis em áreas críticas para qualquer projeto.</p><div class="w-full max-w-2xl flex flex-col items-center"><img src="./assets/grafico_impacto.png" alt="Gráfico mostrando o impacto do design" class="rounded-lg shadow-sm"></div> <p class="text-sm text-gray-400 mt-4">Fonte: https://medium.com/@RangelArtDesign/como-identificar-a-maturidade-em-ux-design-das-empresas-d82b1691c897</p>',
+        },
+        // Slide 13: Descoberta 2: Crescimento Exponencial
+        {
+          title: "Descoberta 2: Crescimento Exponencial",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-4 max-w-2xl">A demanda por profissionais de UX está explodindo, projetando um cenário onde a experiência do usuário será central para tudo. Este é o momento de agir.</p><div class="w-full max-w-2xl flex flex-col items-center"><img src="./assets/Gráfico_Crescimento_UX.png" alt="Gráfico mostrando o crescimento da área de UX" class="rounded-lg shadow-sm"></div> <p class="text-sm text-gray-400 mt-4">Fonte: https://medium.com/aela/entenda-os-diferentes-cargos-e-termos-em-ux-ui-design-4810cc7e01c8</p>',
+        },
+        // Slide 14: Dashboard de Impacto
+        {
+          title: "Dashboard: O Impacto em Dados",
+          customLayout: true,
+          content: `
+                    <div class="p-8 flex flex-col justify-center items-center w-full h-full">
+                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Dashboard: O Impacto em Dados</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-4xl">
+                            <div class="bg-blue-100 p-4 rounded-lg text-center shadow transition transform hover:scale-105">
+                                <p class="text-4xl font-bold text-blue-600">81%</p>
+                                <p class="text-sm text-blue-800 mt-1">Melhora na Usabilidade do Produto</p>
+                            </div>
+                            <div class="bg-green-100 p-4 rounded-lg text-center shadow transition transform hover:scale-105">
+                                <p class="text-4xl font-bold text-green-600">71%</p>
+                                <p class="text-sm text-green-800 mt-1">Aumento na Satisfação dos Usuários</p>
+                            </div>
+                            <div class="bg-yellow-100 p-4 rounded-lg text-center shadow transition transform hover:scale-105">
+                                <p class="text-4xl font-bold text-yellow-600">42%</p>
+                                <p class="text-sm text-yellow-800 mt-1">Impacto Direto nas Receitas</p>
+                            </div>
+                            <div class="bg-purple-100 p-4 rounded-lg text-center shadow transition transform hover:scale-105">
+                                <p class="text-4xl font-bold text-purple-600">100M</p>
+                                <p class="text-sm text-purple-800 mt-1">Profissionais de UX projetados para 2050</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-8">Fonte: Dados compilados da pesquisa do projeto.</p>
+                    </div>
+                `,
+        },
+        // Slide 15: Nossas Propostas
+        {
+          title: "Nossas Propostas",
+          content:
+            '<p class="text-xl text-gray-600 leading-relaxed mb-6 max-w-2xl">Com base na pesquisa, propomos 3 ações práticas:</p><ul class="space-y-4 text-left text-lg"><li><strong class="text-blue-600">Eventos Interdisciplinares:</strong> Conectar UX com Psicologia, Direito e outros cursos.</li><li><strong class="text-blue-600">Métricas de Eficiência:</strong> Adotar práticas de "sustentabilidade algorítmica".</li><li><strong class="text-blue-600">Treinamento em Ética:</strong> Capacitar alunos em LGPD e uso responsável de dados.</li></ul>',
+        },
+        // Slide 16: Chamada para Ação
+        {
+          title: "Um Olhar para o Futuro",
+          content:
+            '<p class="text-5xl font-bold text-gray-800 text-center leading-tight max-w-3xl">O futuro está sendo desenhado agora.<br/><br/>Temos a responsabilidade de fazê-lo bem.</p>',
+        },
+        // Slide 17: Agradecimento
+        {
+          content: `
+                    <div class="w-full h-full bg-blue-600 text-white flex flex-col items-center justify-center text-center p-8">
+                        <h2 class="text-6xl font-bold">Obrigado!</h2>
+                        <div class="my-8 w-24 h-1.5 bg-blue-300 rounded-full"></div>
+                        <p class="text-xl">Dúvidas e Discussão</p>
+                    </div>`,
+        },
+      ];
+
+      const container = document.getElementById("presentation-container");
+      const prevBtn = document.getElementById("prev-btn");
+      const nextBtn = document.getElementById("next-btn");
+      const slideCounter = document.getElementById("slide-counter");
+      const progressBar = document.getElementById("progress-bar");
+
+      let currentSlide = 0;
+
+      function renderSlides() {
+        let slideHTML = "";
+        slidesData.forEach((slide, index) => {
+          if (slide.customLayout) {
+            slideHTML += `<div id="slide-${index}" class="slide w-full h-full flex flex-col justify-center">${slide.content}</div>`;
+          } else if (slide.title) {
+            slideHTML += `
+                        <div id="slide-${index}" class="slide w-full h-full flex flex-col items-center justify-center p-8 text-center">
+                            <div class="w-full flex flex-col items-center">
+                                <h2 class="text-3xl font-bold text-gray-800 mb-6">${slide.title}</h2>
+                                <div class="flex-grow flex flex-col items-center justify-center">${slide.content}</div>
+                            </div>
+                        </div>`;
+          } else {
+            slideHTML += `<div id="slide-${index}" class="slide w-full h-full">${slide.content}</div>`;
+          }
+        });
+        container.innerHTML = slideHTML;
+      }
+
+      function showSlide(index) {
+        const slides = document.querySelectorAll(".slide");
+        slides.forEach((slide, i) => {
+          slide.classList.toggle("active", i === index);
+        });
+
+        slideCounter.textContent = `${index + 1} / ${slides.length}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+
+        const progressPercentage = (index / (slides.length - 1)) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+      }
+
+      // Button Listeners
+      prevBtn.addEventListener("click", () => {
+        if (currentSlide > 0) {
+          currentSlide--;
+          showSlide(currentSlide);
+        }
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (currentSlide < slidesData.length - 1) {
+          currentSlide++;
+          showSlide(currentSlide);
+        }
+      });
+
+      // Initial setup
+      document.addEventListener("DOMContentLoaded", () => {
+        renderSlides();
+        showSlide(currentSlide);
+      });
+    </script>
+  </body>
+</html>
